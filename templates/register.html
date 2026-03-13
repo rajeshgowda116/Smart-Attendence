@@ -1,0 +1,647 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — Smart Attendance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0a1628;
+      --navy2:   #0f2044;
+      --blue:    #1a56db;
+      --sky:     #38bdf8;
+      --accent:  #00e5ff;
+      --glass:   rgba(255,255,255,0.04);
+      --glass2:  rgba(255,255,255,0.08);
+      --border:  rgba(255,255,255,0.10);
+      --text:    #e8f0fe;
+      --muted:   #8a9bc0;
+      --error:   #ff6b6b;
+      --success: #43e89e;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED BACKGROUND ── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 20% 20%, #0d2a5e 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 50% at 80% 80%, #002244 0%, transparent 55%),
+                  var(--navy);
+    }
+    .bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(56,189,248,0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridShift 20s linear infinite;
+    }
+    @keyframes gridShift {
+      from { transform: translate(0,0); }
+      to   { transform: translate(40px, 40px); }
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0;
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; top: -100px; right: -50px;
+              background: radial-gradient(circle, rgba(0,229,255,0.12), transparent);
+              animation-duration: 9s; }
+    .orb-2 { width: 300px; height: 300px; bottom: 50px; left: -80px;
+              background: radial-gradient(circle, rgba(26,86,219,0.2), transparent);
+              animation-duration: 12s; animation-delay: -4s; }
+    .orb-3 { width: 200px; height: 200px; top: 40%; left: 40%;
+              background: radial-gradient(circle, rgba(56,189,248,0.1), transparent);
+              animation-duration: 7s; animation-delay: -2s; }
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* ── LAYOUT ── */
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left {
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 60px;
+      border-right: 1px solid var(--border);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 60px;
+    }
+    .brand-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; box-shadow: 0 0 24px rgba(0,229,255,0.3);
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .brand-name span { color: var(--accent); }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 4vw, 54px);
+      font-weight: 800; line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    .hero-title .line2 { color: var(--accent); }
+
+    .hero-desc {
+      font-size: 16px; color: var(--muted);
+      line-height: 1.7; max-width: 380px;
+      margin-bottom: 48px;
+    }
+
+    .features { display: flex; flex-direction: column; gap: 20px; }
+    .feat {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s;
+    }
+    .feat:hover { background: var(--glass2); border-color: rgba(0,229,255,0.2); }
+    .feat-icon {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .feat-icon.blue  { background: rgba(26,86,219,0.2); }
+    .feat-icon.cyan  { background: rgba(0,229,255,0.12); }
+    .feat-icon.green { background: rgba(67,232,158,0.12); }
+    .feat-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .feat-text span   { font-size: 12px; color: var(--muted); }
+
+    /* ── RIGHT PANEL / FORM ── */
+    .right {
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 60px;
+      overflow-y: auto;
+    }
+    .card {
+      width: 100%; max-width: 440px;
+      animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header { margin-bottom: 36px; }
+    .card-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px; font-weight: 700; margin-bottom: 8px;
+    }
+    .card-header p { font-size: 14px; color: var(--muted); }
+    .card-header p a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .card-header p a:hover { text-decoration: underline; }
+
+    /* Django messages */
+    .messages { margin-bottom: 20px; }
+    .msg {
+      padding: 12px 16px; border-radius: 10px;
+      font-size: 13px; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .msg-error   { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: #ff9999; }
+    .msg-success { background: rgba(67,232,158,0.1);  border: 1px solid rgba(67,232,158,0.3);  color: var(--success); }
+
+    /* Form rows */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .field { margin-bottom: 18px; position: relative; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+
+    .input-wrap { position: relative; }
+    .input-wrap .icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; color: var(--muted); pointer-events: none;
+      transition: color 0.3s;
+    }
+    .input-wrap input {
+      width: 100%; padding: 13px 16px 13px 42px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+      transition: all 0.3s; outline: none;
+    }
+    .input-wrap input::placeholder { color: #4a5a78; }
+    .input-wrap input:focus {
+      border-color: var(--accent);
+      background: rgba(0,229,255,0.04);
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+    }
+    .input-wrap input:focus + .glow { opacity: 1; }
+    .input-wrap input:focus ~ .icon { color: var(--accent); }
+
+    /* password toggle */
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 16px; padding: 4px;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--text); }
+
+    /* field error */
+    .field-error { font-size: 11px; color: var(--error); margin-top: 5px; display: none; }
+    .field.has-error input { border-color: var(--error); }
+    .field.has-error .icon { color: var(--error); }
+    .field.has-error .field-error { display: block; }
+    .field.is-valid input { border-color: var(--success); }
+    .field.is-valid .icon { color: var(--success); }
+
+    /* strength bar */
+    .strength-wrap { margin-top: 8px; }
+    .strength-bar {
+      height: 3px; border-radius: 99px;
+      background: var(--border); overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%; border-radius: 99px; width: 0%;
+      transition: width 0.4s, background 0.4s;
+    }
+    .strength-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* terms */
+    .terms {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 24px; cursor: pointer;
+    }
+    .terms input[type="checkbox"] { display: none; }
+    .check-box {
+      width: 18px; height: 18px; border-radius: 5px;
+      border: 1.5px solid var(--border);
+      flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .check-box svg { display: none; }
+    .terms input:checked ~ .check-box {
+      background: var(--accent); border-color: var(--accent);
+    }
+    .terms input:checked ~ .check-box svg { display: block; }
+    .terms-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .terms-text a { color: var(--accent); text-decoration: none; }
+
+    /* submit button */
+    .btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--blue), #0ea5e9);
+      border: none; border-radius: 12px;
+      color: #fff; font-family: 'Syne', sans-serif;
+      font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: all 0.3s; box-shadow: 0 4px 24px rgba(26,86,219,0.4);
+    }
+    .btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(26,86,219,0.5); }
+    .btn:hover::before { opacity: 1; }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn .btn-text { transition: opacity 0.2s; }
+    .btn .spinner {
+      display: none; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .btn.loading .btn-text { opacity: 0; }
+    .btn.loading .spinner { display: block; }
+    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+    /* divider */
+    .or { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+    .or span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Django form errors display */
+    .django-errors {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.25);
+      border-radius: 10px; padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .django-errors p { font-size: 13px; color: #ff9999; margin-bottom: 4px; }
+    .django-errors p:last-child { margin-bottom: 0; }
+
+    /* step indicator */
+    .steps {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 30px;
+    }
+    .step {
+      width: 28px; height: 4px; border-radius: 99px;
+      background: var(--border); transition: all 0.4s;
+    }
+    .step.active  { background: var(--accent); width: 40px; }
+    .step.done    { background: var(--success); }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; }
+      .left { display: none; }
+      .right { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="page">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="left">
+    <div class="brand">
+      <div class="brand-icon">📍</div>
+      <div class="brand-name">Smart<span>Attend</span></div>
+    </div>
+
+    <h1 class="hero-title">
+      Attendance,<br>
+      <span class="line2">Reimagined.</span>
+    </h1>
+    <p class="hero-desc">
+      Track your classroom presence automatically using GPS. No more manual roll calls — just show up and you're marked.
+    </p>
+
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon blue">🛰️</div>
+        <div class="feat-text">
+          <strong>GPS Verification</strong>
+          <span>Marks you present only when you're inside the classroom</span>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon cyan">⏰</div>
+        <div class="feat-text">
+          <strong>Time-Slot Aware</strong>
+          <span>Works only during your scheduled class window</span>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon green">📊</div>
+        <div class="feat-text">
+          <strong>Attendance Analytics</strong>
+          <span>Track your percentage per subject at a glance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right">
+    <div class="card">
+
+      <div class="steps">
+        <div class="step active" id="s1"></div>
+        <div class="step" id="s2"></div>
+        <div class="step" id="s3"></div>
+      </div>
+
+      <div class="card-header">
+        <h2>Create your account</h2>
+        <p>Already registered? <a href="/admin/login/">Sign in instead</a></p>
+      </div>
+
+      <!-- Django messages -->
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="msg msg-{{ message.tags }}">
+          {% if message.tags == 'error' %}⚠️{% else %}✅{% endif %}
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Django non-field errors -->
+      {% if form.non_field_errors %}
+      <div class="django-errors">
+        {% for error in form.non_field_errors %}
+        <p>⚠️ {{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'register' %}" id="regForm" novalidate>
+        {% csrf_token %}
+
+        <div class="form-row">
+          <div class="field" id="f-fname">
+            <label for="id_first_name">First Name</label>
+            <div class="input-wrap">
+              <span class="icon">👤</span>
+              <input type="text" name="first_name" id="id_first_name"
+                     placeholder="John"
+                     value="{{ form.first_name.value|default:'' }}"
+                     autocomplete="given-name"/>
+            </div>
+            <div class="field-error" id="e-fname"></div>
+          </div>
+
+          <div class="field" id="f-lname">
+            <label for="id_last_name">Last Name</label>
+            <div class="input-wrap">
+              <span class="icon">👤</span>
+              <input type="text" name="last_name" id="id_last_name"
+                     placeholder="Doe"
+                     value="{{ form.last_name.value|default:'' }}"
+                     autocomplete="family-name"/>
+            </div>
+            <div class="field-error" id="e-lname"></div>
+          </div>
+        </div>
+
+        <div class="field" id="f-username">
+          <label for="id_username">Username</label>
+          <div class="input-wrap">
+            <span class="icon">🔑</span>
+            <input type="text" name="username" id="id_username"
+                   placeholder="john_doe123"
+                   value="{{ form.username.value|default:'' }}"
+                   autocomplete="username"/>
+          </div>
+          <div class="field-error" id="e-username">
+            {% if form.username.errors %}{{ form.username.errors|join:", " }}{% endif %}
+          </div>
+        </div>
+
+        <div class="field" id="f-email">
+          <label for="id_email">Email Address</label>
+          <div class="input-wrap">
+            <span class="icon">✉️</span>
+            <input type="email" name="email" id="id_email"
+                   placeholder="john@college.edu"
+                   value="{{ form.email.value|default:'' }}"
+                   autocomplete="email"/>
+          </div>
+          <div class="field-error" id="e-email">
+            {% if form.email.errors %}{{ form.email.errors|join:", " }}{% endif %}
+          </div>
+        </div>
+
+        <div class="field" id="f-password1">
+          <label for="id_password1">Password</label>
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" name="password1" id="id_password1"
+                   placeholder="Min. 8 characters"
+                   autocomplete="new-password"/>
+            <button type="button" class="toggle-pw" onclick="togglePw('id_password1', this)">👁️</button>
+          </div>
+          <div class="strength-wrap">
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div class="strength-label" id="strength-label">Password strength</div>
+          </div>
+          <div class="field-error" id="e-password1">
+            {% if form.password1.errors %}{{ form.password1.errors|join:", " }}{% endif %}
+          </div>
+        </div>
+
+        <div class="field" id="f-password2">
+          <label for="id_password2">Confirm Password</label>
+          <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" name="password2" id="id_password2"
+                   placeholder="Repeat password"
+                   autocomplete="new-password"/>
+            <button type="button" class="toggle-pw" onclick="togglePw('id_password2', this)">👁️</button>
+          </div>
+          <div class="field-error" id="e-password2">
+            {% if form.password2.errors %}{{ form.password2.errors|join:", " }}{% endif %}
+          </div>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" id="agreeCheck"/>
+          <div class="check-box">
+            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+              <path d="M1 4L3.5 6.5L9 1" stroke="#0a1628" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="terms-text">
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </span>
+        </label>
+
+        <button type="submit" class="btn" id="submitBtn">
+          <span class="btn-text">Create Account →</span>
+          <div class="spinner"></div>
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── PASSWORD TOGGLE ──
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else                         { inp.type = 'password'; btn.textContent = '👁️'; }
+  }
+
+  // ── PASSWORD STRENGTH ──
+  const pw1 = document.getElementById('id_password1');
+  const fill = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  const levels = [
+    { max: 0,  color: 'transparent', text: 'Password strength' },
+    { max: 25, color: '#ff6b6b',     text: 'Weak' },
+    { max: 50, color: '#ffa94d',     text: 'Fair' },
+    { max: 75, color: '#74c0fc',     text: 'Good' },
+    { max: 100,color: '#43e89e',     text: 'Strong 💪' },
+  ];
+
+  pw1.addEventListener('input', () => {
+    const v = pw1.value;
+    let score = 0;
+    if (v.length >= 8)  score += 25;
+    if (/[A-Z]/.test(v)) score += 25;
+    if (/[0-9]/.test(v)) score += 25;
+    if (/[^A-Za-z0-9]/.test(v)) score += 25;
+    const lv = score === 0 ? levels[0] : levels.find(l => score <= l.max) || levels[4];
+    fill.style.width = score + '%';
+    fill.style.background = lv.color;
+    label.textContent = lv.text;
+    label.style.color = lv.color === 'transparent' ? 'var(--muted)' : lv.color;
+    updateSteps();
+  });
+
+  // ── REAL-TIME VALIDATION ──
+  function setValid(fieldId) {
+    document.getElementById('f-' + fieldId).classList.remove('has-error');
+    document.getElementById('f-' + fieldId).classList.add('is-valid');
+  }
+  function setError(fieldId, msg) {
+    const f = document.getElementById('f-' + fieldId);
+    f.classList.add('has-error'); f.classList.remove('is-valid');
+    document.getElementById('e-' + fieldId).textContent = msg;
+  }
+  function clearState(fieldId) {
+    const f = document.getElementById('f-' + fieldId);
+    f.classList.remove('has-error', 'is-valid');
+  }
+
+  document.getElementById('id_username').addEventListener('blur', function() {
+    if (!this.value.trim())     setError('username', 'Username is required');
+    else if (this.value.length < 3) setError('username', 'At least 3 characters');
+    else if (/\s/.test(this.value)) setError('username', 'No spaces allowed');
+    else setValid('username');
+    updateSteps();
+  });
+
+  document.getElementById('id_email').addEventListener('blur', function() {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!this.value.trim())  setError('email', 'Email is required');
+    else if (!re.test(this.value)) setError('email', 'Enter a valid email address');
+    else setValid('email');
+    updateSteps();
+  });
+
+  document.getElementById('id_password2').addEventListener('input', function() {
+    if (this.value && this.value !== pw1.value)
+      setError('password2', 'Passwords do not match');
+    else if (this.value)
+      setValid('password2');
+    else clearState('password2');
+  });
+
+  // ── STEP INDICATOR ──
+  function updateSteps() {
+    const username = document.getElementById('f-username').classList.contains('is-valid');
+    const email    = document.getElementById('f-email').classList.contains('is-valid');
+    const pw       = pw1.value.length >= 8;
+    document.getElementById('s1').className = 'step active';
+    document.getElementById('s2').className = username && email ? 'step done' : 'step active';
+    document.getElementById('s3').className = pw ? 'step done' : 'step';
+    if (username && email) document.getElementById('s2').className = 'step done';
+    if (username && email && pw) document.getElementById('s3').className = 'step done';
+  }
+
+  // ── FORM SUBMIT ──
+  document.getElementById('regForm').addEventListener('submit', function(e) {
+    let valid = true;
+    const u = document.getElementById('id_username').value.trim();
+    const em = document.getElementById('id_email').value.trim();
+    const p1 = document.getElementById('id_password1').value;
+    const p2 = document.getElementById('id_password2').value;
+    const agree = document.getElementById('agreeCheck').checked;
+
+    if (!u) { setError('username', 'Username is required'); valid = false; }
+    if (!em) { setError('email', 'Email is required'); valid = false; }
+    if (!p1) { setError('password1', 'Password is required'); valid = false; }
+    if (p1 && p1.length < 8) { setError('password1', 'Minimum 8 characters'); valid = false; }
+    if (p1 !== p2) { setError('password2', 'Passwords do not match'); valid = false; }
+    if (!agree) {
+      e.preventDefault();
+      alert('Please agree to the Terms of Service to continue.');
+      return;
+    }
+    if (!valid) { e.preventDefault(); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+  });
+
+  // ── PRE-FILL DJANGO ERRORS ──
+  document.addEventListener('DOMContentLoaded', () => {
+    ['username','email','password1','password2'].forEach(name => {
+      const errEl = document.getElementById('e-' + name);
+      if (errEl && errEl.textContent.trim()) {
+        const f = document.getElementById('f-' + name);
+        if (f) f.classList.add('has-error');
+      }
+    });
+  });
+</script>
+</body>
+</html>
+
