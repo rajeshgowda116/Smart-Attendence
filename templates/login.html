@@ -1,600 +1,242 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login — Smart Attendance</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Attendance – Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --navy:   #0a1628;
-      --navy2:  #0f2044;
-      --blue:   #1a56db;
-      --sky:    #38bdf8;
-      --accent: #00e5ff;
-      --glass:  rgba(255,255,255,0.04);
-      --glass2: rgba(255,255,255,0.08);
-      --border: rgba(255,255,255,0.10);
-      --text:   #e8f0fe;
-      --muted:  #8a9bc0;
-      --error:  #ff6b6b;
-      --success:#43e89e;
+      --blue-deep: #0a2540;
+      --blue-mid:  #1652a1;
+      --blue-bright: #2d7ef7;
+      --blue-light: #e8f0fe;
+      --accent: #00c6a9;
+      --text-main: #0a2540;
+      --text-muted: #637381;
+      --white: #ffffff;
+      --card-shadow: 0 20px 60px rgba(10,37,64,.13);
     }
-
-    html, body {
-      height: 100%; font-family: 'DM Sans', sans-serif;
-      background: var(--navy); color: var(--text); overflow-x: hidden;
-    }
-
-    /* ── BACKGROUND ── */
-    .bg {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 70% 60% at 75% 30%, #0d2a5e 0%, transparent 60%),
-        radial-gradient(ellipse 50% 50% at 15% 80%, #001833 0%, transparent 55%),
-        var(--navy);
-    }
-    .bg::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image: radial-gradient(circle, rgba(56,189,248,0.07) 1px, transparent 1px);
-      background-size: 36px 36px;
-      animation: gridDrift 25s linear infinite;
-    }
-    @keyframes gridDrift {
-      from { transform: translate(0,0); }
-      to   { transform: translate(36px, 36px); }
-    }
-
-    .orb {
-      position: fixed; border-radius: 50%;
-      filter: blur(90px); pointer-events: none; z-index: 0;
-      animation: floatOrb 10s ease-in-out infinite;
-    }
-    .orb-1 { width: 500px; height: 500px; top: -150px; left: -100px;
-              background: radial-gradient(circle, rgba(26,86,219,0.18), transparent);
-              animation-duration: 11s; }
-    .orb-2 { width: 350px; height: 350px; bottom: -80px; right: -60px;
-              background: radial-gradient(circle, rgba(0,229,255,0.10), transparent);
-              animation-duration: 8s; animation-delay: -3s; }
-    .orb-3 { width: 180px; height: 180px; top: 55%; left: 60%;
-              background: radial-gradient(circle, rgba(56,189,248,0.12), transparent);
-              animation-duration: 6s; animation-delay: -5s; }
-    @keyframes floatOrb {
-      0%,100% { transform: translateY(0) scale(1); }
-      50%      { transform: translateY(-25px) scale(1.04); }
-    }
-
-    /* ── LAYOUT ── */
-    .page {
-      position: relative; z-index: 1;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
       min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 480px;
-    }
-
-    /* ── LEFT VISUAL PANEL ── */
-    .left {
-      display: flex; flex-direction: column;
-      justify-content: space-between;
-      padding: 48px 56px;
-      border-right: 1px solid var(--border);
+      background: var(--blue-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
       overflow: hidden;
     }
+    /* Animated background blobs */
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .18;
+      animation: blobFloat 8s ease-in-out infinite alternate;
+    }
+    .bg-blob-1 { width: 520px; height: 520px; background: var(--blue-bright); top: -120px; left: -140px; animation-delay: 0s; }
+    .bg-blob-2 { width: 380px; height: 380px; background: var(--accent); bottom: -80px; right: -100px; animation-delay: 3s; }
+    .bg-blob-3 { width: 260px; height: 260px; background: #5b8ef7; top: 50%; left: 50%; animation-delay: 1.5s; }
+    @keyframes blobFloat { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,-30px) scale(1.06); } }
 
-    .brand {
-      display: flex; align-items: center; gap: 14px;
+    /* Card */
+    .login-card {
+      background: var(--white);
+      border-radius: 24px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 440px;
+      padding: 2.8rem 2.6rem 2.4rem;
+      position: relative;
+      z-index: 2;
+      animation: cardIn .55s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes cardIn { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: 2rem;
     }
     .brand-icon {
-      width: 46px; height: 46px; border-radius: 13px;
-      background: linear-gradient(135deg, var(--blue), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; box-shadow: 0 0 28px rgba(0,229,255,0.25);
-    }
-    .brand-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px; font-weight: 700;
-    }
-    .brand-name span { color: var(--accent); }
-
-    /* big centered visual */
-    .visual-center {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 40px 0;
-    }
-
-    /* clock animation */
-    .clock-ring {
-      position: relative; width: 180px; height: 180px;
-      margin: 0 auto 40px;
-    }
-    .clock-ring svg {
-      width: 180px; height: 180px;
-      animation: rotateClock 10s linear infinite;
-    }
-    @keyframes rotateClock {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-    .clock-inner {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      text-align: center;
-    }
-    .clock-inner .emoji { font-size: 40px; }
-    .clock-inner .time-now {
-      font-family: 'Syne', sans-serif;
-      font-size: 13px; font-weight: 700;
-      color: var(--accent); margin-top: 4px; letter-spacing: 1px;
-    }
-
-    .visual-title {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(28px, 3vw, 42px);
-      font-weight: 800; line-height: 1.15;
-      margin-bottom: 18px;
-    }
-    .visual-title .hl { color: var(--accent); }
-    .visual-sub {
-      font-size: 15px; color: var(--muted);
-      line-height: 1.7; max-width: 400px;
-    }
-
-    /* stats row */
-    .stats {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
-    }
-    .stat {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 14px; padding: 18px 16px;
-      text-align: center; backdrop-filter: blur(8px);
-      transition: all 0.3s;
-    }
-    .stat:hover { background: var(--glass2); border-color: rgba(0,229,255,0.2); }
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 24px; font-weight: 800;
-      color: var(--accent); display: block;
-    }
-    .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-    /* ── RIGHT / FORM PANEL ── */
-    .right {
-      display: flex; align-items: center; justify-content: center;
-      padding: 48px 40px;
-      background: rgba(10,22,40,0.6);
-      backdrop-filter: blur(20px);
-      border-left: 1px solid var(--border);
-    }
-
-    .card {
-      width: 100%;
-      animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) both;
-    }
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    .card-header { margin-bottom: 36px; }
-    .card-header h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 30px; font-weight: 800; margin-bottom: 8px;
-    }
-    .card-header p { font-size: 14px; color: var(--muted); }
-    .card-header p a { color: var(--accent); text-decoration: none; font-weight: 500; }
-    .card-header p a:hover { text-decoration: underline; }
-
-    /* greeting chip */
-    .greeting {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 14px; border-radius: 99px;
-      background: rgba(0,229,255,0.08);
-      border: 1px solid rgba(0,229,255,0.2);
-      font-size: 12px; color: var(--accent);
-      font-weight: 600; margin-bottom: 20px;
-      letter-spacing: 0.5px;
-    }
-
-    /* ── MESSAGES ── */
-    .messages { margin-bottom: 18px; }
-    .msg {
-      padding: 12px 16px; border-radius: 10px;
-      font-size: 13px; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .msg-error   { background: rgba(255,107,107,0.10); border: 1px solid rgba(255,107,107,0.25); color: #ff9999; }
-    .msg-success { background: rgba(67,232,158,0.08);  border: 1px solid rgba(67,232,158,0.25);  color: var(--success); }
-
-    .django-errors {
-      background: rgba(255,107,107,0.08);
-      border: 1px solid rgba(255,107,107,0.22);
-      border-radius: 10px; padding: 13px 16px; margin-bottom: 18px;
-    }
-    .django-errors p { font-size: 13px; color: #ff9999; margin-bottom: 3px; }
-    .django-errors p:last-child { margin: 0; }
-
-    /* ── FIELDS ── */
-    .field { margin-bottom: 20px; position: relative; }
-    .field-top {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px;
-    }
-    .field label {
-      font-size: 12px; font-weight: 600;
-      letter-spacing: 0.8px; text-transform: uppercase;
-      color: var(--muted);
-    }
-    .field-top a {
-      font-size: 12px; color: var(--accent);
-      text-decoration: none;
-    }
-    .field-top a:hover { text-decoration: underline; }
-
-    .input-wrap { position: relative; }
-    .input-wrap .icon {
-      position: absolute; left: 14px; top: 50%;
-      transform: translateY(-50%); font-size: 16px;
-      color: var(--muted); pointer-events: none; transition: color 0.3s;
-    }
-    .input-wrap input {
-      width: 100%; padding: 14px 44px 14px 44px;
-      background: var(--glass);
-      border: 1px solid var(--border);
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
       border-radius: 12px;
-      color: var(--text); font-family: 'DM Sans', sans-serif;
-      font-size: 14px; outline: none; transition: all 0.3s;
-    }
-    .input-wrap input::placeholder { color: #4a5a78; }
-    .input-wrap input:focus {
-      border-color: var(--accent);
-      background: rgba(0,229,255,0.04);
-      box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
-    }
-    .input-wrap input:focus ~ .icon { color: var(--accent); }
-
-    .toggle-pw {
-      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 15px; padding: 4px;
-      transition: color 0.2s;
-    }
-    .toggle-pw:hover { color: var(--text); }
-
-    .field-error { font-size: 11px; color: var(--error); margin-top: 5px; display: none; }
-    .field.has-error input { border-color: var(--error); }
-    .field.has-error .icon { color: var(--error); }
-    .field.has-error .field-error { display: block; }
-
-    /* remember me */
-    .remember {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 24px; cursor: pointer;
-    }
-    .remember input[type="checkbox"] { display: none; }
-    .check-box {
-      width: 18px; height: 18px; border-radius: 5px;
-      border: 1.5px solid var(--border); flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
+      color: #fff; font-size: 1.25rem;
+      box-shadow: 0 4px 14px rgba(45,126,247,.35);
     }
-    .check-box svg { display: none; }
-    .remember input:checked ~ .check-box {
-      background: var(--accent); border-color: var(--accent);
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.18rem;
+      color: var(--blue-deep);
+      line-height: 1.1;
     }
-    .remember input:checked ~ .check-box svg { display: block; }
-    .remember-text { font-size: 13px; color: var(--muted); }
+    .brand-sub { font-size: .72rem; color: var(--text-muted); font-weight: 400; letter-spacing: .03em; }
 
-    /* ── BUTTON ── */
-    .btn {
-      width: 100%; padding: 15px;
-      background: linear-gradient(135deg, var(--blue), #0ea5e9);
-      border: none; border-radius: 12px;
-      color: #fff; font-family: 'Syne', sans-serif;
-      font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
-      cursor: pointer; position: relative; overflow: hidden;
-      transition: all 0.3s;
-      box-shadow: 0 4px 24px rgba(26,86,219,0.4);
-    }
-    .btn::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(26,86,219,0.5); }
-    .btn:hover::before { opacity: 1; }
-    .btn:active { transform: translateY(0); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn .btn-text { transition: opacity 0.2s; }
-    .btn .spinner {
-      display: none; width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff; border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-    }
-    .btn.loading .btn-text { opacity: 0; }
-    .btn.loading .spinner { display: block; }
-    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    h2 { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.7rem; color: var(--blue-deep); margin-bottom: .35rem; }
+    .sub-text { color: var(--text-muted); font-size: .9rem; margin-bottom: 1.8rem; }
 
-    /* failed attempts shake */
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20%      { transform: translateX(-8px); }
-      40%      { transform: translateX(8px); }
-      60%      { transform: translateX(-5px); }
-      80%      { transform: translateX(5px); }
+    .form-label { font-size: .82rem; font-weight: 600; color: var(--text-main); margin-bottom: .4rem; letter-spacing: .02em; }
+    .input-wrap { position: relative; margin-bottom: 1.1rem; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); font-size: 1rem; pointer-events: none; z-index: 1;
     }
-    .shake { animation: shake 0.4s ease; }
-
-    /* divider */
-    .or { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
-    .or span { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-    /* quick links */
-    .quick-links {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    .form-control {
+      border-radius: 12px;
+      border: 1.5px solid #dde3ea;
+      padding: .68rem 1rem .68rem 2.6rem;
+      font-size: .92rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-main);
+      transition: border-color .2s, box-shadow .2s;
+      background: #f7f9fc;
     }
-    .ql {
-      padding: 11px 14px;
-      background: var(--glass); border: 1px solid var(--border);
-      border-radius: 10px; text-align: center;
-      font-size: 12px; color: var(--muted); text-decoration: none;
-      transition: all 0.25s; display: flex; align-items: center;
-      justify-content: center; gap: 6px;
+    .form-control:focus {
+      border-color: var(--blue-bright);
+      box-shadow: 0 0 0 3.5px rgba(45,126,247,.14);
+      background: #fff;
+      outline: none;
     }
-    .ql:hover { background: var(--glass2); color: var(--text); border-color: rgba(0,229,255,0.2); }
+    .toggle-pass {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; color: var(--text-muted); font-size: 1rem; border: none; background: none;
+      z-index: 1;
+    }
+    .toggle-pass:hover { color: var(--blue-bright); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .page { grid-template-columns: 1fr; }
-      .left { display: none; }
-      .right { padding: 40px 24px; background: transparent; border: none; }
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, var(--blue-mid) 0%, var(--blue-bright) 100%);
+      border: none;
+      border-radius: 12px;
+      padding: .78rem;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: .02em;
+      margin-top: .5rem;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 6px 22px rgba(45,126,247,.32);
+    }
+    .btn-login:hover { opacity:.9; transform: translateY(-1px); box-shadow: 0 10px 28px rgba(45,126,247,.38); }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login.loading { pointer-events:none; }
+    .spinner-border-sm { width:1rem; height:1rem; border-width:2px; }
+
+    .divider { display:flex; align-items:center; gap:1rem; margin:1.4rem 0; color:var(--text-muted); font-size:.8rem; }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:#e5e9ef; }
+
+    .register-link {
+      text-align: center; font-size: .88rem; color: var(--text-muted);
+    }
+    .register-link a {
+      color: var(--blue-bright); font-weight: 600; text-decoration: none;
+    }
+    .register-link a:hover { text-decoration: underline; }
+
+    .alert-msg {
+      font-size: .83rem; border-radius: 10px;
+      display: none; margin-bottom: 1rem;
+    }
+    @media (max-width: 480px) {
+      .login-card { padding: 2rem 1.4rem 1.8rem; }
     }
   </style>
 </head>
 <body>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
 
-<div class="bg"></div>
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-
-<div class="page">
-
-  <!-- ── LEFT VISUAL ── -->
-  <div class="left">
-    <div class="brand">
-      <div class="brand-icon">📍</div>
-      <div class="brand-name">Smart<span>Attend</span></div>
-    </div>
-
-    <div class="visual-center">
-      <!-- Animated clock ring -->
-      <div class="clock-ring">
-        <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="90" cy="90" r="80" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
-          <circle cx="90" cy="90" r="80" stroke="url(#ringGrad)" stroke-width="2"
-                  stroke-dasharray="502" stroke-dashoffset="126" stroke-linecap="round"/>
-          <!-- tick marks -->
-          <line x1="90" y1="12" x2="90" y2="22" stroke="rgba(0,229,255,0.5)" stroke-width="2"/>
-          <line x1="168" y1="90" x2="158" y2="90" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
-          <line x1="90" y1="168" x2="90" y2="158" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
-          <line x1="12" y1="90" x2="22" y2="90" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
-          <!-- dots at 45deg -->
-          <circle cx="146.6" cy="33.4" r="2" fill="rgba(0,229,255,0.3)"/>
-          <circle cx="146.6" cy="146.6" r="2" fill="rgba(0,229,255,0.2)"/>
-          <circle cx="33.4" cy="146.6" r="2" fill="rgba(0,229,255,0.2)"/>
-          <circle cx="33.4" cy="33.4" r="2" fill="rgba(0,229,255,0.2)"/>
-          <defs>
-            <linearGradient id="ringGrad" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#00e5ff"/>
-              <stop offset="100%" stop-color="#1a56db" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <div class="clock-inner">
-          <div class="emoji">📍</div>
-          <div class="time-now" id="liveTime">--:--</div>
-        </div>
-      </div>
-
-      <h2 class="visual-title">
-        Welcome<br>
-        <span class="hl">Back.</span>
-      </h2>
-      <p class="visual-sub">
-        Sign in to view your attendance records, manage your subjects, and track your classroom presence in real time.
-      </p>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <span class="stat-num">50m</span>
-        <div class="stat-lbl">GPS radius</div>
-      </div>
-      <div class="stat">
-        <span class="stat-num">GPS</span>
-        <div class="stat-lbl">Verified entry</div>
-      </div>
-      <div class="stat">
-        <span class="stat-num">0%</span>
-        <div class="stat-lbl">Proxy fraud</div>
+  <div class="login-card">
+    <div class="brand-row">
+      <div class="brand-icon"><i class="bi bi-qr-code-scan"></i></div>
+      <div>
+        <div class="brand-title">SmartAttend</div>
+        <div class="brand-sub">GPS-based Attendance System</div>
       </div>
     </div>
+
+    <h2>Welcome back</h2>
+    <p class="sub-text">Sign in to your account to continue</p>
+
+    <div class="alert alert-danger alert-msg" id="alertMsg"></div>
+
+    <div>
+      <label class="form-label">Username</label>
+      <div class="input-wrap">
+        <i class="bi bi-person-fill input-icon"></i>
+        <input type="text" class="form-control" id="username" placeholder="Enter your username" autocomplete="username" />
+      </div>
+
+      <label class="form-label">Password</label>
+      <div class="input-wrap">
+        <i class="bi bi-lock-fill input-icon"></i>
+        <input type="password" class="form-control" id="password" placeholder="Enter your password" autocomplete="current-password" />
+        <button class="toggle-pass" type="button" onclick="togglePass()"><i class="bi bi-eye-slash" id="eyeIcon"></i></button>
+      </div>
+
+      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+        <span id="loginText">Sign In</span>
+        <span id="loginSpinner" class="d-none">
+          <span class="spinner-border spinner-border-sm me-2"></span>Signing in…
+        </span>
+      </button>
+    </div>
+
+    <div class="divider">or</div>
+    <p class="register-link">Don't have an account? <a href="register.html">Create one</a></p>
   </div>
 
-  <!-- ── RIGHT FORM ── -->
-  <div class="right">
-    <div class="card">
-
-      <div class="greeting" id="greetChip">👋 Good morning</div>
-
-      <div class="card-header">
-        <h2>Sign in</h2>
-        <p>New here? <a href="{% url 'register' %}">Create a free account</a></p>
-      </div>
-
-      <!-- Django messages -->
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <div class="msg msg-{{ message.tags }}">
-          {% if message.tags == 'error' %}⚠️{% else %}✅{% endif %}
-          {{ message }}
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <!-- Django form errors (wrong credentials etc.) -->
-      {% if form.non_field_errors %}
-      <div class="django-errors" id="formErrors">
-        {% for error in form.non_field_errors %}
-        <p>⚠️ {{ error }}</p>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <form method="POST" action="" id="loginForm" novalidate>
-        {% csrf_token %}
-
-        {% if next %}
-        <input type="hidden" name="next" value="{{ next }}"/>
-        {% endif %}
-
-        <div class="field" id="f-username">
-          <div class="field-top">
-            <label for="id_username">Username</label>
-          </div>
-          <div class="input-wrap">
-            <span class="icon">🔑</span>
-            <input type="text" name="username" id="id_username"
-                   placeholder="Enter your username"
-                   value="{{ form.username.value|default:'' }}"
-                   autocomplete="username" autofocus/>
-          </div>
-          <div class="field-error" id="e-username">Username is required</div>
-        </div>
-
-        <div class="field" id="f-password">
-          <div class="field-top">
-            <label for="id_password">Password</label>
-            <a href="">Forgot password?</a>
-          </div>
-          <div class="input-wrap">
-            <span class="icon">🔒</span>
-            <input type="password" name="password" id="id_password"
-                   placeholder="Enter your password"
-                   autocomplete="current-password"/>
-            <button type="button" class="toggle-pw" onclick="togglePw()">👁️</button>
-          </div>
-          <div class="field-error" id="e-password">Password is required</div>
-        </div>
-
-        <label class="remember">
-          <input type="checkbox" name="remember_me" id="rememberMe"/>
-          <div class="check-box">
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path d="M1 4L3.5 6.5L9 1" stroke="#0a1628" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <span class="remember-text">Keep me signed in</span>
-        </label>
-
-        <button type="submit" class="btn" id="submitBtn">
-          <span class="btn-text">Sign In →</span>
-          <div class="spinner"></div>
-        </button>
-
-        <div class="or"><span>or</span></div>
-
-        <div class="quick-links">
-          <a href="{% url 'register' %}" class="ql">📝 Register</a>
-          <a href="" class="ql">🔓 Reset password</a>
-        </div>
-
-      </form>
-    </div>
-  </div>
-</div>
-
-<script>
-  // ── LIVE CLOCK ──
-  function updateClock() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('liveTime').textContent = h + ':' + m;
-  }
-  updateClock(); setInterval(updateClock, 1000);
-
-  // ── GREETING ──
-  (function() {
-    const h = new Date().getHours();
-    const chip = document.getElementById('greetChip');
-    if      (h >= 5  && h < 12) chip.textContent = '🌅 Good morning';
-    else if (h >= 12 && h < 17) chip.textContent = '☀️ Good afternoon';
-    else if (h >= 17 && h < 21) chip.textContent = '🌆 Good evening';
-    else                         chip.textContent = '🌙 Good night';
-  })();
-
-  // ── PASSWORD TOGGLE ──
-  function togglePw() {
-    const inp = document.getElementById('id_password');
-    const btn = document.querySelector('.toggle-pw');
-    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
-    else                         { inp.type = 'password'; btn.textContent = '👁️'; }
-  }
-
-  // ── VALIDATION ──
-  function setError(id, msg) {
-    const f = document.getElementById('f-' + id);
-    f.classList.add('has-error');
-    document.getElementById('e-' + id).textContent = msg;
-  }
-  function clearError(id) {
-    document.getElementById('f-' + id).classList.remove('has-error');
-  }
-
-  document.getElementById('id_username').addEventListener('input', function() {
-    if (this.value.trim()) clearError('username');
-  });
-  document.getElementById('id_password').addEventListener('input', function() {
-    if (this.value) clearError('password');
-  });
-
-  // ── FORM SUBMIT ──
-  document.getElementById('loginForm').addEventListener('submit', function(e) {
-    let valid = true;
-    const u = document.getElementById('id_username').value.trim();
-    const p = document.getElementById('id_password').value;
-
-    if (!u) { setError('username', 'Username is required'); valid = false; }
-    if (!p) { setError('password', 'Password is required'); valid = false; }
-
-    if (!valid) { e.preventDefault(); return; }
-
-    const btn = document.getElementById('submitBtn');
-    btn.classList.add('loading'); btn.disabled = true;
-  });
-
-  // ── SHAKE ON DJANGO ERROR ──
-  document.addEventListener('DOMContentLoaded', () => {
-    const errBox = document.getElementById('formErrors');
-    if (errBox) {
-      const card = document.querySelector('.card');
-      card.style.animation = 'none';
-      setTimeout(() => { card.style.animation = 'shake 0.4s ease'; }, 100);
+  <script>
+    function togglePass() {
+      const p = document.getElementById('password');
+      const eye = document.getElementById('eyeIcon');
+      if (p.type === 'password') {
+        p.type = 'text';
+        eye.className = 'bi bi-eye';
+      } else {
+        p.type = 'password';
+        eye.className = 'bi bi-eye-slash';
+      }
     }
-  });
-</script>
+
+    function handleLogin() {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const alert = document.getElementById('alertMsg');
+      alert.style.display = 'none';
+
+      if (!user || !pass) {
+        alert.textContent = 'Please fill in all fields.';
+        alert.style.display = 'block';
+        return;
+      }
+
+      // Simulate loading
+      document.getElementById('loginText').classList.add('d-none');
+      document.getElementById('loginSpinner').classList.remove('d-none');
+
+      setTimeout(() => {
+        // Demo: any credentials redirect to dashboard
+        localStorage.setItem('sas_user', JSON.stringify({ name: user, role: 'student' }));
+        window.location.href = 'dashboard.html';
+      }, 1400);
+    }
+
+    // Allow Enter key
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+  </script>
 </body>
 </html>
