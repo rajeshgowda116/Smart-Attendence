@@ -247,8 +247,8 @@
           </div>
         </a>
         <div class="nav-right">
-          <div class="nav-avatar" id="navAvatar">JS</div>
-          <a href="login.html" class="btn-logout" onclick="logout()">
+          <div class="nav-avatar" id="navAvatar">{{ request.user.username|slice:":2"|upper }}</div>
+          <a href="{% url 'logout' %}" class="btn-logout">
             <i class="bi bi-box-arrow-right"></i>
             <span class="d-none d-sm-inline">Logout</span>
           </a>
@@ -464,9 +464,7 @@
     });
 
     function loadUser() {
-      const raw = localStorage.getItem('sas_user');
-      const user = raw ? JSON.parse(raw) : { name: 'John Smith' };
-      const name = user.name || 'Student';
+      const name = "{{ request.user.get_full_name|default:request.user.username|escapejs }}" || 'Student';
       document.getElementById('heroName').textContent = 'Welcome, ' + name + '!';
       document.getElementById('navAvatar').textContent = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
     }
@@ -635,9 +633,6 @@
       setTimeout(() => { item.style.opacity='0'; item.style.transition='opacity .4s'; setTimeout(()=>item.remove(),400); }, 4000);
     }
 
-    function logout() {
-      localStorage.removeItem('sas_user');
-    }
   </script>
 </body>
 </html>
